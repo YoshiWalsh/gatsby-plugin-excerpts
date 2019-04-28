@@ -1,6 +1,12 @@
 {
     "name": "gatsby-plugin-excerpts",
     "description": "A powerful way to extract excerpts from content",
+    "keywords": [
+        "gatsby",
+        "gatsby-plugin",
+        "excerpts",
+        "snippets"
+    ],
     "author": {
         "name": "Joshua Walsh",
         "email": "josh@ymindustries.com",
