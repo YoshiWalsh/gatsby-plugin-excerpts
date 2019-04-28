@@ -9,37 +9,20 @@ import {
     GraphQLBoolean,
   } from 'gatsby/graphql';
 import cheerio from 'cheerio';
+import {IExcerptsPluginConfiguration, IExcerptSourceConfigurationBase, IExcerptSourceConfigurationHtmlQuery} from './ConfigurationTypes';
 
-const config = {
-    excerpts: {
-        snippet: {
-            type: "html",
-            appliesToNodeTypes: ["MarkdownRemark"],
-            sources: [
-                {
-                    type: "htmlQuery",
-                    sourceField: "html",
-                    excerptSelector: ".custom-block.excerpt .custom-block-body",
-                    stripSelector: "a"
-                },
-                {
-                    type: "htmlQuery",
-                    sourceField: "html",
-                    excerptSelector: "html > *",
-                    ignoreSelector: "img, .custom-block.iconBox, .custom-block.aside, details, .gatsby-highlight",
-                    stripSelector: "a"
-                }
-            ]
-        }
-    }
+let config: IExcerptsPluginConfiguration = {
+    sources: {},
+    sourceSets: {},
+    excerpts: {}
 };
 
-let text = (o: Cheerio): string => o.text();
+export function onPreInit(_: any, configuration: IExcerptsPluginConfiguration) {
+    config = configuration;
+}
 
-abstract class SourceType<T, U, V> {
-    constructor(settings: T) {
-
-    }
+abstract class SourceType<T extends IExcerptSourceConfigurationBase, U, V> {
+    constructor(settings: T) {}
 
     public abstract search(fieldContents: U): V;
 
@@ -49,17 +32,9 @@ abstract class SourceType<T, U, V> {
     };
 }
 
-interface HtmlQuerySettings {
-    type: "htmlQuery",
-    sourceField: string,
-    excerptSelector: string,
-    ignoreSelector?: string,
-    stripSelector?: string
-}
-
-class HtmlQuery extends SourceType<HtmlQuerySettings, string, Cheerio> {
-    private settings: HtmlQuerySettings;
-    constructor(settings: HtmlQuerySettings) {
+class HtmlQuery extends SourceType<IExcerptSourceConfigurationHtmlQuery, string, Cheerio> {
+    private settings: IExcerptSourceConfigurationHtmlQuery;
+    constructor(settings: IExcerptSourceConfigurationHtmlQuery) {
         super(settings);
         this.settings = settings;
     }
@@ -94,43 +69,65 @@ const excerptSourceTypes: { [type: string]: new (any) => SourceType<any, any, an
     htmlQuery: HtmlQuery
 };
 
-async function getExcerpt(excerptType, node, info: any, ctx: any) {
-    const excerptSettings = config.excerpts[excerptType];
+async function getExcerpt(excerptName, nodeType, node, info: any, ctx: any) {
+    const excerptSettings = config.excerpts[excerptName];
+    const sourceSetName = excerptSettings.nodeTypeSourceSet[nodeType] || excerptSettings.nodeTypeSourceSet["*"];
+    const sourceSet = config.sourceSets[sourceSetName];
+    if(!sourceSet) {
+        const err = "[gatsby-plugin-excerpts] Source Set " + sourceSetName + " is referenced by excerpt " + excerptName + " but does not exist.";
+        console.error(err);
+        throw new Error(err);
+    }
     const fieldCache = {};
 
-    for(let i = 0; i < excerptSettings.sources.length; i++) {
-        const source = excerptSettings.sources[i];
+    for(let i = 0; i < sourceSet.length; i++) {
+        const sourceName = sourceSet[i];
+        const source = config.sources[sourceName];
+        if(!source) {
+            const err = "[gatsby-plugin-excerpts] Source " + sourceName + " is referenced by Source Set " + sourceSetName + " but does not exist.";
+            console.error(err);
+            throw new Error(err);
+        }
 
         if(!fieldCache[source.sourceField]) {
-            // HACK
-            // If anyone knows a better way to get the value of another field, please let me know!
-            // This calls the other field's resolve function, but we don't get all the arguments right.
-            // For example, we pass the 'info' argument for our field, not the other field.
-            // Hopefully this will work well enough for most people's purposes.
-            try {
-                fieldCache[source.sourceField] = await Promise.resolve(info.parentType._fields[source.sourceField].resolve.call(this, node, {}, ctx, info));
-            } catch (ex) {
-                console.error("[gatsby-plugin-excerpts] Failed to retrieve field", source.sourceField, "for excerpt", excerptType, "on node", JSON.stringify(node), "");
+            if(info.parentType._fields[source.sourceField]) {
+                try {
+                    // HACK
+                    // If anyone knows a better way to get the value of another field, please let me know!
+                    // This calls the other field's resolve function, but we don't get all the arguments right.
+                    // For example, we pass the 'info' argument for our field, not the other field.
+                    // Hopefully this will work well enough for most people's purposes.
+                    fieldCache[source.sourceField] = await Promise.resolve(info.parentType._fields[source.sourceField].resolve.call(this, node, {}, ctx, info));
+                } catch (ex) {
+                    console.warn("[gatsby-plugin-excerpts] Failed to retrieve field", source.sourceField, "for source", sourceName, "on node", JSON.stringify(node), ". Error: ", ex);
+                }
+            } else {
+                console.log("[gatsby-plugin-excerpts] Attempted to retrieve non-existent field", source.sourceField, "for source", sourceName, "in excerpt", excerptName, "with node of type", nodeType, ". Ignoring.");
             }
+            
         }
         const sourceFieldValue = fieldCache[source.sourceField];
 
-        let searcher = new excerptSourceTypes[source.type](source);
-        let results = searcher.search(sourceFieldValue);
+        if(sourceFieldValue !== undefined) {
+            let searcher = new excerptSourceTypes[source.type](source);
+            let results = searcher.search(sourceFieldValue);
 
-        if(results) {
-            return searcher.outputConverters[excerptSettings.type](results);
+            if(results) {
+                return searcher.outputConverters[excerptSettings.type](results);
+            }
         }
     }
 };
 
 export async function setFieldsOnGraphQLNodeType({type}) {
     let fields = {};
-    for(const k in config.excerpts) {
-        if(config.excerpts[k].appliesToNodeTypes.indexOf(type.name) !== -1) {
-            fields[k] = {
+    for(const excerptName in config.excerpts) {
+        const excerpt = config.excerpts[excerptName];
+        const sourceSetName = excerpt.nodeTypeSourceSet[type.name] || excerpt.nodeTypeSourceSet["*"];
+        if(sourceSetName) {
+            fields[excerptName] = {
                 type: GraphQLString,
-                resolve: (s, args, ctx, info) => getExcerpt(k, s, info, ctx)
+                resolve: (node, args, ctx, info) => getExcerpt(excerptName, type.name, node, info, ctx)
             };
         }
     }
