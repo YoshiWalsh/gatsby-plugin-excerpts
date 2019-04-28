@@ -19,9 +19,22 @@ Configuration options are documented via TSDoc in the [ConfigurationTypes file](
 If you're using TypeScript, you can import these types to get documentation within your IDE. (E.g. via IntelliSense)
 
 ```typescript
-import { ConfigurationTypes as ExcerptConfigurationTypes} from 'gatsby-plugin-excerpts';
-const excerptsConfig: ExcerptConfigurationTypes.IExcerptsPluginConfiguration = {
-    //...
+// At the top of gatsby-config.ts
+import { demand } from 'ts-demand'; // Optional, but makes it easier to apply typechecking to your config
+import { ConfigurationTypes as ExcerptConfigurationTypes } from 'gatsby-plugin-excerpts';
+
+// Then, in your plugin list
+module.exports = {
+    // ...
+    plugins: [
+        // ...
+        {
+            resolve: `gatsby-plugin-excerpts`,
+            options: demand<ExcerptConfigurationTypes.IExcerptsPluginConfiguration>({
+                // ...
+            })
+        }
+    ]
 };
 ```
 
