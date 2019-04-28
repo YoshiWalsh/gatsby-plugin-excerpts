@@ -47,8 +47,7 @@ class HtmlQuery extends SourceType<IExcerptSourceConfigurationHtmlQuery, string,
         $outputContainer.find(this.settings.ignoreSelector).remove();
         $outputContainer.find(this.settings.stripSelector).each((index, element) => {
             let $element = $(element);
-            let span = $('<span></span>').html($element.html());
-            $element.replaceWith(span);
+            $element.replaceWith(element.childNodes);
         });
         this.settings.elementReplacements.forEach(replacement => {
             $outputContainer.find(replacement.selector).each((index, element) => {
