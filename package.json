@@ -1,5 +1,15 @@
 {
     "name": "gatsby-plugin-excerpts",
+    "description": "A powerful way to extract excerpts from content",
+    "author": {
+        "name": "Joshua Walsh",
+        "email": "josh@ymindustries.com",
+        "url": "https://www.joshwalsh.me/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/JoshuaWalsh/gatsby-plugin-excerpts.git"
+    },
     "scripts": {
         "build": "tsc && babel --out-dir=. build/"
     },
