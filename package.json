@@ -1,0 +1,17 @@
+{
+    "name": "gatsby-plugin-excerpts",
+    "scripts": {
+        "build": "tsc && babel --out-dir=. build/"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.2.3",
+        "@babel/core": "^7.2.2",
+        "@babel/preset-env": "^7.2.3",
+        "gatsby": "^2.0.72",
+        "typescript": "^3.2.2",
+        "@types/cheerio": "^0.22.10"
+    },
+    "dependencies": {
+        "cheerio": "^1.0.0-rc.2"
+    }
+}
