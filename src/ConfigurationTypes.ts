@@ -1,3 +1,5 @@
+import {IOptions as ITruncateOptions} from 'truncate-html';
+
 export interface IExcerptsPluginConfiguration {
     /**
      * A collection of named Sources.
@@ -81,12 +83,31 @@ export abstract class IExcerptSourceConfigurationBase {
     type: string;
 }
 
+export enum TextUnits {
+    character,
+    word,
+    sentence,
+    paragraph
+}
+
 export interface IExcerptSourceConfigurationHtmlQuery extends IExcerptSourceConfigurationBase {
     type: "htmlQuery";
     sourceField: string;
     excerptSelector: string;
     stripSelector?: string;
     ignoreSelector?: string;
+    elementReplacements?: [
+        {
+            selector: string;
+            replaceWith: string;
+        }
+    ];
+
+    /**
+     * Used to trim the resulting HTML down to a specific length.
+     * See documentation for truncate-html: https://www.npmjs.com/package/truncate-html#readme
+     */
+    truncate?: ITruncateOptions;
 }
 
 /*

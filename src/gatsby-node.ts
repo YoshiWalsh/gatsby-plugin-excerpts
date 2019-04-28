@@ -9,6 +9,7 @@ import {
     GraphQLBoolean,
   } from 'gatsby/graphql';
 import cheerio from 'cheerio';
+import truncate from 'truncate-html';
 import {IExcerptsPluginConfiguration, IExcerptSourceConfigurationBase, IExcerptSourceConfigurationHtmlQuery} from './ConfigurationTypes';
 
 let config: IExcerptsPluginConfiguration = {
@@ -49,10 +50,19 @@ class HtmlQuery extends SourceType<IExcerptSourceConfigurationHtmlQuery, string,
             let span = $('<span></span>').html($element.html());
             $element.replaceWith(span);
         });
+        this.settings.elementReplacements.forEach(replacement => {
+            $outputContainer.find(replacement.selector).each((index, element) => {
+                element.tagName = replacement.replaceWith;
+            });
+        });
         if($outputContainer.children().length < 1) {
             return null;
         }
-        return $outputContainer;
+        if(this.settings.truncate) {
+            return cheerio.load(truncate($outputContainer.html(), this.settings.truncate)).root();
+        } else {
+            return $outputContainer;
+        };
     }
 
     public outputConverters = {
