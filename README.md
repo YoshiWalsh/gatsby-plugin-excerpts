@@ -1,4 +1,4 @@
-## Introduction
+# gatsby-plugin-excerpts
 
 This plugin provides a powerful way to extract excerpts from content. The excerpts might be useful for providing content previews on listing pages or for generating SEO descriptions.
 
