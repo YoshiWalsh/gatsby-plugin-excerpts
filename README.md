@@ -14,7 +14,7 @@ This plugin provides a powerful way to extract excerpts from content. The excerp
 
 ## Documentation
 
-Configuration options are documented via TSDoc in the [ConfigurationTypes file](https://github.com/JoshuaWalsh/gatsby-plugin-excerpts/blob/master/src/ConfigurationTypes.ts).
+Configuration options are documented via TSDoc in the [ConfigurationTypes file](https://github.com/JoshuaWalsh/gatsby-plugin-excerpts/blob/release/src/ConfigurationTypes.ts).
 
 If you're using TypeScript, you can import these types to get documentation within your IDE. (E.g. via IntelliSense)
 
