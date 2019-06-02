@@ -1,5 +1,7 @@
 # gatsby-plugin-excerpts
 
+[![](https://img.shields.io/npm/v/gatsby-plugin-excerpts.svg?style=flat)](https://npmjs.com/package/gatsby-plugin-excerpts)
+
 This plugin provides a powerful way to extract excerpts from content. The excerpts might be useful for providing content previews on listing pages or for generating SEO descriptions.
 
 ## Features
