@@ -25,14 +25,14 @@
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.2.3",
-    "gatsby": "^2.0.72",
-    "typescript": "^3.2.2",
-    "@types/cheerio": "^0.22.10"
+    "@types/cheerio": "^0.22.10",
+    "gatsby": "^2.18.17",
+    "typescript": "^3.2.2"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "truncate-html": "^1.0.2",
-    "snyk": "^1.189.0"
+    "snyk": "^1.267.0",
+    "truncate-html": "^1.0.2"
   },
   "snyk": true
 }
