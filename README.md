@@ -1,4 +1,6 @@
-## Introduction
+# gatsby-plugin-excerpts
+
+[![](https://img.shields.io/npm/v/gatsby-plugin-excerpts.svg?style=flat)](https://npmjs.com/package/gatsby-plugin-excerpts)
 
 This plugin provides a powerful way to extract excerpts from content. The excerpts might be useful for providing content previews on listing pages or for generating SEO descriptions.
 
@@ -14,7 +16,7 @@ This plugin provides a powerful way to extract excerpts from content. The excerp
 
 ## Documentation
 
-Configuration options are documented via TSDoc in the [ConfigurationTypes file](https://github.com/JoshuaWalsh/gatsby-plugin-excerpts/blob/master/src/ConfigurationTypes.ts).
+Configuration options are documented via TSDoc in the [ConfigurationTypes file](https://github.com/JoshuaWalsh/gatsby-plugin-excerpts/blob/release/src/ConfigurationTypes.ts).
 
 If you're using TypeScript, you can import these types to get documentation within your IDE. (E.g. via IntelliSense)
 
@@ -149,6 +151,8 @@ This might be useful for a blog, as on a post page the post title will probably 
 }
 ```
 
+### Display in components
+
 Then you can just add 'snippet' to your GraphQL queries to retrieve the excerpt called 'snippet'.
 
 ```graphql
@@ -180,6 +184,23 @@ If your excerpt's output type is "html" (which it is in this example) then you w
 ```jsx
 <div className="snippet" dangerouslySetInnerHTML={{ __html: article.snippet }} />
 ```
+
+### Usage in content
+
+Now when you write content, you can specify blocks to include within the snippet.
+
+```markdown
+When I was a child, I used to spend long hours thinking about how every blog post needed a paragraph of irrelevant drivel at the start of it. Such content satisfies the content writer's desire to tell a story with their post, and they narcissistically convince themselves that others would want to read this story. But the problem is that when that blog post appears on a listing page or in search engine results, the excerpt often just displays the first few characters of the post. If the post starts with inanity the viewer may not click on the link.
+
+[[snippet]]
+| Wouldn't it be nice if you could retrieve excerpts from anywhere within the post? If the author could *choose* which paragraphs would be used as the snippet?
+| 
+| Well now you can.
+
+Thanks to the useful Gatsby plugin gatsby-plugin-excerpts, you can create custom rules that blah blah blah blah...
+```
+
+The paragraphs within the snippet block (the 2nd and 3rd paragraphs) will be used as the snippet.
 
 ## FAQ
 
