@@ -106,7 +106,11 @@ async function getExcerpt(excerptName, nodeType, node, info: any, ctx: any) {
                     // This calls the other field's resolve function, but we don't get all the arguments right.
                     // For example, we pass the 'info' argument for our field, not the other field.
                     // Hopefully this will work well enough for most people's purposes.
-                    fieldCache[source.sourceField] = await Promise.resolve(info.parentType._fields[source.sourceField].resolve.call(this, node, {}, ctx, info));
+                    if(info.parentType._fields[source.sourceField].resolve) {
+                        fieldCache[source.sourceField] = await Promise.resolve(info.parentType._fields[source.sourceField].resolve.call(this, node, {}, ctx, info));
+                    } else {
+                        fieldCache[source.sourceField] = node[source.sourceField];
+                    }
                 } catch (ex) {
                     console.warn("[gatsby-plugin-excerpts] Failed to retrieve field", source.sourceField, "for source", sourceName, "on node", JSON.stringify(node), ". Error: ", ex);
                 }
