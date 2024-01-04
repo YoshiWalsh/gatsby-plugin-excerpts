@@ -32,7 +32,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "snyk": "^1.272.0",
-    "truncate-html": "^1.0.3"
+    "truncate-html": "^1.0.4"
   },
   "snyk": true
 }
