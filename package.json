@@ -30,9 +30,9 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.2",
+    "cheerio": "^1.0.0",
     "snyk": "^1.272.0",
-    "truncate-html": "^1.0.3"
+    "truncate-html": "^1.1.2"
   },
   "snyk": true
 }
